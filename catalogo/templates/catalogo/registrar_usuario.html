@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Cliente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Diseño automático para el formulario */
+        input, select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        
+        /* Ajuste para que las instrucciones de contraseña se vean bien */
+        .helptext { font-size: 0.85em; color: #6c757d; display: block; margin-bottom: 10px; }
+        ul.errorlist { color: red; list-style: none; padding: 0; font-size: 0.9em; margin-bottom: 10px; }
+    </style>
+</head>
+<body class="bg-light py-5">
+    <div class="container" style="max-width: 600px;">
+        <div class="card shadow border-0 p-4">
+            <h3 class="fw-bold mb-4 text-primary">➕ Agregar Nuevo Cliente</h3>
+            
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100 fw-bold mt-3">Crear Usuario</button>
+            </form>
+            
+            <div class="text-center mt-4">
+                <a href="{% url 'inicio' %}" class="text-decoration-none text-muted">← Cancelar y volver al catálogo</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

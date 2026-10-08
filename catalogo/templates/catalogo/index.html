@@ -1,13 +1,97 @@
-<ul>
-    {% for p in productos %}
-        <li>
-            <strong>{{ p.nombre }}</strong> - {{ p.categoria }} - ${{ p.precio }} (Stock: {{ p.stock }})
-            <br>
-            {% if p.imagen %}
-                <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}" width="150">
-            {% else %}
-                <p>Sin foto disponible</p>
-            {% endif %}
-        </li>
-    {% endfor %}
-</ul>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferretería - Catálogo</title>
+    <!-- Cargamos Bootstrap para el diseño -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .product-img { height: 220px; object-fit: cover; }
+        .card { transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+    </style>
+</head>
+<body class="bg-light">
+
+    <!-- Barra de Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'inicio' %}">🛠️ Ferretería</a>
+            <div class="d-flex align-items-center">
+                {% if user.is_authenticated %}
+                    <span class="text-light me-3">Hola, <strong>{{ user.username }}</strong></span>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'registrar_usuario' %}" class="btn btn-sm btn-outline-info me-2">➕ Cliente</a>
+                        <a href="{% url 'agregar_producto' %}" class="btn btn-sm btn-outline-success me-2">📦 Producto</a>
+                    {% endif %}
+                    <a href="{% url 'ver_carrito' %}" class="btn btn-sm btn-warning me-2 fw-bold">🛒 Mi Carrito</a>
+                    <form action="{% url 'logout' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Salir</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-light">Iniciar Sesión</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Grilla de Productos -->
+    <div class="container pb-5">
+        <h2 class="mb-4 text-center fw-bold text-secondary">Catálogo de Productos</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            
+            {% for p in productos %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    
+                    <!-- Imagen (Archivo o URL) -->
+                    {% if p.imagen %}
+                        <img src="{{ p.imagen.url }}" class="card-img-top product-img" alt="{{ p.nombre }}">
+                    {% elif p.imagen_url %}
+                        <img src="{{ p.imagen_url }}" class="card-img-top product-img" alt="{{ p.nombre }}">
+                    {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center product-img">
+                            <span>Sin foto</span>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Cuerpo de la tarjeta -->
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge bg-secondary mb-2" style="width: fit-content;">{{ p.categoria }}</span>
+                        <h5 class="card-title fw-bold">{{ p.nombre }}</h5>
+                        <h3 class="text-primary mb-3">${{ p.precio }}</h3>
+                        
+                        <!-- Lógica de Compra y Admin -->
+                        <div class="mt-auto">
+                            {% if p.stock > 0 %}
+                                <p class="text-success small mb-2 fw-bold">✓ {{ p.stock }} en stock</p>
+                                {% if user.is_authenticated %}
+                                    <form action="{% url 'agregar_carrito' p.id %}" method="post" class="d-flex mb-2">
+                                        {% csrf_token %}
+                                        <input type="number" name="cantidad" min="1" max="{{ p.stock }}" value="1" class="form-control form-control-sm me-2" style="width: 70px;">
+                                        <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold">Agregar</button>
+                                    </form>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-danger fw-bold mb-2">❌ Agotado</p>
+                            {% endif %}
+
+                            <!-- Botones Admin -->
+                            {% if user.is_superuser %}
+                                <div class="d-flex justify-content-between mt-3 pt-3 border-top">
+                                    <a href="{% url 'editar_producto' p.id %}" class="btn btn-sm btn-outline-warning w-50 me-1">✏️ Editar</a>
+                                    <a href="{% url 'eliminar_producto' p.id %}" class="btn btn-sm btn-outline-danger w-50 ms-1">🗑️ Borrar</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</body>
+</html>

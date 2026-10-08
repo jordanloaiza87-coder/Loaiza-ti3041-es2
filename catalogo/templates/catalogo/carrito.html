@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Carrito</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light pt-5">
+    <div class="container" style="max-width: 800px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">🛒 Mi Carrito</h2>
+            <a href="{% url 'inicio' %}" class="btn btn-outline-secondary">← Volver a la tienda</a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for item in items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-4">
+                            <div>
+                                <h5 class="fw-bold mb-1">{{ item.producto.nombre }}</h5>
+                                <small class="text-muted">Precio unitario: ${{ item.producto.precio }}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-primary rounded-pill fs-6 mb-1">Cant: {{ item.cantidad }}</span>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <div class="p-5 text-center text-muted">
+                            <h4>Tu carrito está vacío 😔</h4>
+                            <p>¡Vuelve al catálogo para agregar algunas herramientas!</p>
+                        </div>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            {% if items %}
+            <div class="card-footer bg-white p-4 text-end">
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-lg fw-bold px-5">✅ Confirmar Compra</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
