@@ -1,0 +1,13 @@
+<ul>
+    {% for p in productos %}
+        <li>
+            <strong>{{ p.nombre }}</strong> - {{ p.categoria }} - ${{ p.precio }} (Stock: {{ p.stock }})
+            <br>
+            {% if p.imagen %}
+                <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}" width="150">
+            {% else %}
+                <p>Sin foto disponible</p>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
